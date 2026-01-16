@@ -6,6 +6,16 @@ import { useCartStore } from "@/store/useStore";
 import { useToast } from "@/components/ui/Toast";
 import { SkeletonOrderCard } from "@/components/ui/Skeleton";
 import { ProfileLayout } from "@/components/ui/ProfileLayout";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
+import {
+  ClipboardList,
+  History,
+  PlusCircle,
+  Store,
+  Sandwich,
+  ShoppingCart,
+  LayoutDashboard,
+} from "lucide-react";
 
 interface Order {
   _id: string;
@@ -42,9 +52,17 @@ interface MealPlan {
 }
 
 const sidebarSections = [
-  { id: "active", label: "Order Details", icon: "📋" },
-  { id: "history", label: "Order History", icon: "📜" },
-  { id: "new", label: "New Order", icon: "➕" },
+  {
+    id: "active",
+    label: "Order Details",
+    icon: <LayoutDashboard className="w-5 h-5" />,
+  },
+  {
+    id: "history",
+    label: "Order History",
+    icon: <History className="w-5 h-5" />,
+  },
+  { id: "new", label: "New Order", icon: <PlusCircle className="w-5 h-5" /> },
 ];
 
 const mealCategories = [
@@ -195,8 +213,8 @@ export default function CounterPage() {
 
   return (
     <ProfileLayout
-      title="Counter"
-      icon="💳"
+      title="Counter Station"
+      icon={<Store className="w-6 h-6" />}
       sections={sidebarSections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
@@ -463,43 +481,51 @@ export default function CounterPage() {
                     setViewMode("meals");
                     setActiveCategory("all");
                   }}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "meals"
-                      ? "bg-[#001F3F] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                      : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
-                  🍔 Meal Combos
+                  <Sandwich className="w-4 h-4" /> Meal Combos
                 </button>
                 <button
                   onClick={() => {
                     setViewMode("items");
                     setActiveCategory("all");
                   }}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "items"
-                      ? "bg-[#001F3F] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                      : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
-                  📋 Individual Items
+                  <ClipboardList className="w-4 h-4" /> Individual Items
                 </button>
               </div>
 
-              {/* Category Filter Pills */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              {/* Category Cards (POS Style) */}
+              <div className="flex gap-4 mb-8 overflow-x-auto pb-4 scrollbar-hide">
                 {(viewMode === "meals" ? mealCategories : itemCategories).map(
                   (cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setActiveCategory(cat.id)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      className={`flex flex-col items-center justify-center min-w-[100px] h-[100px] p-3 rounded-2xl transition-all border ${
                         activeCategory === cat.id
-                          ? "bg-[#001F3F] text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          ? "bg-violet-600 text-white shadow-lg scale-105 border-violet-600"
+                          : "bg-white text-gray-400 hover:bg-gray-50 hover:border-gray-200 border-transparent shadow-sm"
                       }`}
                     >
-                      {cat.label}
+                      <DynamicIcon
+                        name={cat.id === "all" ? "LayoutGrid" : cat.label}
+                        className={`w-8 h-8 mb-2 ${
+                          activeCategory === cat.id
+                            ? "text-white"
+                            : "text-gray-400"
+                        }`}
+                      />
+                      <span className="text-xs font-semibold">{cat.label}</span>
                     </button>
                   )
                 )}
@@ -511,45 +537,60 @@ export default function CounterPage() {
                   {filteredMeals.map((meal) => {
                     const qty = getItemQuantity(meal._id);
                     return (
-                      <div key={meal._id} className="card p-5 relative">
-                        <div className="flex items-start gap-4 mb-4">
-                          <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center text-4xl">
-                            {meal.image}
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-bold text-gray-800 text-lg">
-                              {meal.name}
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {meal.description}
-                            </p>
-                          </div>
+                      <div
+                        key={meal._id}
+                        className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                      >
+                        <div
+                          className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                            meal.image.startsWith("http")
+                              ? "bg-transparent shadow-sm"
+                              : "bg-gradient-to-br from-amber-50 to-orange-50"
+                          }`}
+                        >
+                          <DynamicIcon
+                            name={meal.image}
+                            className={`${
+                              meal.image.startsWith("http")
+                                ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                : "w-16 h-16 text-amber-600 transition-transform group-hover:scale-110"
+                            }`}
+                          />
                         </div>
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <span className="text-2xl font-bold text-[#001F3F]">
-                            ${meal.price}
-                          </span>
+
+                        <h3 className="font-bold text-gray-800 text-lg mb-1 line-clamp-1">
+                          {meal.name}
+                        </h3>
+                        <p className="text-sm text-gray-400 mb-4 line-clamp-2 min-h-[40px]">
+                          {meal.description}
+                        </p>
+
+                        <div className="w-full mt-auto">
+                          <div className="flex items-center justify-between mb-3 px-1">
+                            <span className="text-xl font-bold text-violet-900">
+                              ${meal.price}
+                            </span>
+                          </div>
+
                           {qty === 0 ? (
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-10 h-10 bg-[#001F3F] text-white rounded-xl flex items-center justify-center text-xl font-bold hover:bg-[#00336b] transition-colors"
+                              className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
                             >
-                              +
+                              Add to Order
                             </button>
                           ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                               <button
                                 onClick={() => decreaseQuantity(meal._id)}
-                                className="w-8 h-8 bg-gray-100 text-gray-700 rounded-lg flex items-center justify-center text-lg font-bold hover:bg-gray-200 transition-colors"
+                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                               >
                                 −
                               </button>
-                              <span className="w-6 text-center font-bold text-gray-800">
-                                {qty}
-                              </span>
+                              <span className="font-bold text-xl">{qty}</span>
                               <button
                                 onClick={() => addMealToCart(meal)}
-                                className="w-8 h-8 bg-[#001F3F] text-white rounded-lg flex items-center justify-center text-lg font-bold hover:bg-[#00336b] transition-colors"
+                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                               >
                                 +
                               </button>
@@ -565,20 +606,41 @@ export default function CounterPage() {
                   {filteredMenu.map((item) => {
                     const qty = getItemQuantity(item._id);
                     return (
-                      <div key={item._id} className="card p-5 relative">
-                        <div className="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center mb-3">
-                          <span className="text-3xl">{item.image}</span>
+                      <div
+                        key={item._id}
+                        className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                      >
+                        <div
+                          className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                            item.image.startsWith("http")
+                              ? "bg-transparent shadow-sm"
+                              : "bg-gradient-to-br from-gray-50 to-gray-100"
+                          }`}
+                        >
+                          <DynamicIcon
+                            name={item.image}
+                            className={`${
+                              item.image.startsWith("http")
+                                ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                : "w-14 h-14 text-indigo-400 transition-transform group-hover:scale-110"
+                            }`}
+                          />
                         </div>
-                        <h3 className="font-semibold text-gray-800">
+
+                        <h3 className="font-bold text-gray-800 text-base mb-1 line-clamp-1">
                           {item.name}
                         </h3>
-                        <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                        <p className="text-xs text-gray-400 mb-4 line-clamp-2 min-h-[32px]">
                           {item.description}
                         </p>
-                        <div className="flex items-center justify-between mt-3">
-                          <p className="text-xl font-bold text-[#001F3F]">
-                            ${item.price}
-                          </p>
+
+                        <div className="w-full mt-auto">
+                          <div className="flex items-center justify-between mb-3 px-1">
+                            <span className="text-lg font-bold text-violet-900">
+                              ${item.price}
+                            </span>
+                          </div>
+
                           {qty === 0 ? (
                             <button
                               onClick={() => {
@@ -590,21 +652,19 @@ export default function CounterPage() {
                                 });
                                 showToast(`Added ${item.name}`, "success");
                               }}
-                              className="w-10 h-10 bg-[#001F3F] text-white rounded-xl flex items-center justify-center text-xl font-bold hover:bg-[#00336b] transition-colors"
+                              className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
                             >
-                              +
+                              Add
                             </button>
                           ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                               <button
                                 onClick={() => decreaseQuantity(item._id)}
-                                className="w-8 h-8 bg-gray-100 text-gray-700 rounded-lg flex items-center justify-center text-lg font-bold hover:bg-gray-200 transition-colors"
+                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                               >
                                 −
                               </button>
-                              <span className="w-6 text-center font-bold text-gray-800">
-                                {qty}
-                              </span>
+                              <span className="font-bold text-xl">{qty}</span>
                               <button
                                 onClick={() => {
                                   addToCart({
@@ -614,7 +674,7 @@ export default function CounterPage() {
                                     quantity: 1,
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#001F3F] text-white rounded-lg flex items-center justify-center text-lg font-bold hover:bg-[#00336b] transition-colors"
+                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                               >
                                 +
                               </button>
@@ -628,58 +688,92 @@ export default function CounterPage() {
               )}
             </section>
 
-            {/* Cart */}
+            {/* Cart Sidebar (Receipt Style) */}
             <aside className="xl:sticky xl:top-8 h-fit">
-              <div className="card p-6">
-                <h3 className="font-bold text-gray-800 mb-4">Order Cart</h3>
+              <div className="bg-white rounded-3xl shadow-lg p-6 flex flex-col h-[calc(100vh-140px)]">
+                <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-dashed border-gray-100">
+                  <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                    <ShoppingCart className="w-5 h-5 text-gray-600" />
+                  </div>
+                  <div>
+                    <h2 className="font-bold text-gray-800 text-lg">
+                      Current Order
+                    </h2>
+                    <p className="text-xs text-gray-400 font-medium tracking-wide">
+                      NEW ORDER
+                    </p>
+                  </div>
+                </div>
 
-                <div className="space-y-2 mb-5 max-h-64 overflow-y-auto">
+                {/* Cart Items List */}
+                <div className="flex-1 overflow-y-auto pr-2 space-y-4 mb-6 scrollbar-thin scrollbar-thumb-gray-200">
                   {items.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
-                      <span className="text-4xl block mb-2">🛒</span>
-                      <p>Cart is empty</p>
+                    <div className="flex flex-col items-center justify-center h-full text-gray-300">
+                      <ShoppingCart className="w-12 h-12 mb-3 opacity-20" />
+                      <p className="font-medium text-sm">No items yet</p>
                     </div>
                   ) : (
                     items.map((item) => (
-                      <div
-                        key={item.menuItemId}
-                        className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
-                      >
-                        <div>
-                          <p className="font-medium text-sm">{item.name}</p>
-                          <p className="text-xs text-gray-500">
-                            ×{item.quantity}
+                      <div key={item.menuItemId} className="flex gap-3 group">
+                        <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center shrink-0">
+                          <div className="font-bold text-gray-400 text-xs">
+                            x{item.quantity}
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
+                              {item.name}
+                            </h4>
+                            <span className="font-bold text-violet-600 text-sm">
+                              ${item.price * item.quantity}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-400">
+                            ${item.price} each
                           </p>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">
-                            ${item.price * item.quantity}
-                          </span>
-                          <button
-                            onClick={() => removeFromCart(item.menuItemId)}
-                            className="text-red-500 text-sm"
-                          >
-                            ×
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => removeFromCart(item.menuItemId)}
+                          className="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          ×
+                        </button>
                       </div>
                     ))
                   )}
                 </div>
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between mb-4">
-                    <span>Total</span>
-                    <span className="text-2xl font-bold text-[#001F3F]">
+                {/* Summary & Actions */}
+                <div className="mt-auto pt-6 border-t-2 border-dashed border-gray-100">
+                  <div className="flex justify-between items-center mb-2 text-sm">
+                    <span className="text-gray-500">Subtotal</span>
+                    <span className="font-medium text-gray-800">
                       ${total()}
                     </span>
                   </div>
+                  <div className="flex justify-between items-center mb-6 text-sm">
+                    <span className="text-gray-500">Tax (5%)</span>
+                    <span className="font-medium text-gray-800">
+                      ${(total() * 0.05).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-end mb-6">
+                    <span className="text-gray-400 text-sm font-medium">
+                      Total Amount
+                    </span>
+                    <span className="text-3xl font-extrabold text-violet-900">
+                      ${(total() * 1.05).toFixed(2)}
+                    </span>
+                  </div>
+
                   <button
                     onClick={handleNewOrder}
-                    disabled={items.length === 0}
-                    className="btn btn-success w-full"
+                    disabled={items.length === 0 || isLoading}
+                    className="w-full py-4 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
-                    Create Order
+                    {isLoading ? "Processing..." : "Place Order"}
                   </button>
                 </div>
               </div>

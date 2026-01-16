@@ -3,18 +3,19 @@
 import { ReactNode, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSocket } from "@/components/providers/SocketProvider";
+import { ChevronDown, LogOut } from "lucide-react";
 
 interface NavSection {
   id: string;
   label: string;
-  icon: string;
+  icon: ReactNode;
   items?: { id: string; label: string }[];
 }
 
 interface ProfileLayoutProps {
   children: ReactNode;
   title: string;
-  icon: string;
+  icon: ReactNode;
   sections: NavSection[];
   activeSection: string;
   activeSubItem?: string | null;
@@ -66,11 +67,11 @@ export function ProfileLayout({
         {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#001F3F] to-[#00336b] rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-2xl">{icon}</span>
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-violet-800 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="text-white">{icon}</div>
             </div>
             <div>
-              <h1 className="font-bold text-lg text-[#001F3F]">{title}</h1>
+              <h1 className="font-bold text-lg text-violet-900">{title}</h1>
               <div
                 className={`flex items-center gap-1.5 text-xs ${
                   isConnected ? "text-green-600" : "text-gray-400"
@@ -98,11 +99,11 @@ export function ProfileLayout({
                     onClick={() => handleSectionClick(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeSection === section.id
-                        ? "bg-[#001F3F] text-white"
+                        ? "bg-violet-600 text-white"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    <span className="text-xl">{section.icon}</span>
+                    {section.icon}
                     <span className="font-medium">{section.label}</span>
                     {section.items && section.items.length > 0 && (
                       <span
@@ -110,7 +111,7 @@ export function ProfileLayout({
                           expandedSection === section.id ? "rotate-180" : ""
                         }`}
                       >
-                        ▾
+                        <ChevronDown className="w-4 h-4" />
                       </span>
                     )}
                   </button>
@@ -126,14 +127,14 @@ export function ProfileLayout({
                             onClick={() => handleSubItemClick(item.id)}
                             className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
                               activeSubItem === item.id
-                                ? "bg-[#001F3F]/10 text-[#001F3F] font-medium"
+                                ? "bg-violet-50 text-violet-600 font-medium"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
                           >
                             <span
                               className={`w-2 h-2 rounded-full ${
                                 activeSubItem === item.id
-                                  ? "bg-[#001F3F]"
+                                  ? "bg-violet-600"
                                   : "bg-gray-300"
                               }`}
                             />
@@ -153,7 +154,7 @@ export function ProfileLayout({
             onClick={() => handleSectionClick("signout")}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
           >
-            <span className="text-xl">🚪</span>
+            <LogOut className="w-5 h-5" />
             <span className="font-medium">Sign Out</span>
           </button>
         </div>

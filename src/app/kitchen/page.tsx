@@ -5,6 +5,15 @@ import { useSocket } from "@/components/providers/SocketProvider";
 import { useToast } from "@/components/ui/Toast";
 import { SkeletonOrderCard } from "@/components/ui/Skeleton";
 import { ProfileLayout } from "@/components/ui/ProfileLayout";
+import {
+  ClipboardList,
+  Flame,
+  ChefHat,
+  Clock,
+  CircleCheck,
+  StickyNote,
+  UtensilsCrossed,
+} from "lucide-react";
 
 interface Order {
   _id: string;
@@ -17,8 +26,16 @@ interface Order {
 }
 
 const sidebarSections = [
-  { id: "queue", label: "Orders in Queue", icon: "📋" },
-  { id: "preparing", label: "Orders Preparing", icon: "🔥" },
+  {
+    id: "queue",
+    label: "Orders in Queue",
+    icon: <ClipboardList className="w-5 h-5" />,
+  },
+  {
+    id: "preparing",
+    label: "Orders Preparing",
+    icon: <Flame className="w-5 h-5" />,
+  },
 ];
 
 export default function KitchenPage() {
@@ -105,7 +122,7 @@ export default function KitchenPage() {
   return (
     <ProfileLayout
       title="Kitchen Display"
-      icon="👨‍🍳"
+      icon={<ChefHat className="w-6 h-6" />}
       sections={sidebarSections}
       activeSection={activeSection}
       onSectionChange={setActiveSection}
@@ -125,7 +142,7 @@ export default function KitchenPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">In Queue</p>
-                <p className="text-4xl font-bold text-[#001F3F]">
+                <p className="text-4xl font-bold text-violet-900">
                   {queueOrders.length}
                 </p>
               </div>
@@ -143,7 +160,7 @@ export default function KitchenPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Preparing</p>
-                <p className="text-4xl font-bold text-[#001F3F]">
+                <p className="text-4xl font-bold text-violet-900">
                   {preparingOrders.length}
                 </p>
               </div>
@@ -204,7 +221,7 @@ export default function KitchenPage() {
                     : "border-l-blue-500"
                 } ${
                   selectedOrder?._id === order._id
-                    ? "ring-2 ring-[#001F3F]"
+                    ? "ring-2 ring-violet-900"
                     : "hover:shadow-lg"
                 }`}
               >

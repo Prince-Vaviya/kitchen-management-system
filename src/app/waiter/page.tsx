@@ -6,6 +6,14 @@ import { useToast } from "@/components/ui/Toast";
 import { Spinner } from "@/components/ui/Spinner";
 import { SkeletonOrderCard } from "@/components/ui/Skeleton";
 import { ProfileLayout } from "@/components/ui/ProfileLayout";
+import { DynamicIcon } from "@/components/ui/DynamicIcon";
+import {
+  UtensilsCrossed,
+  ClipboardList,
+  Sandwich,
+  ShoppingCart,
+  AlertCircle,
+} from "lucide-react";
 
 interface MenuItem {
   _id: string;
@@ -45,8 +53,12 @@ const itemCategories = [
 ];
 
 const sidebarSections = [
-  { id: "meals", label: "Meal Combos", icon: "🍔" },
-  { id: "items", label: "Individual Items", icon: "📋" },
+  { id: "meals", label: "Meal Combos", icon: <Sandwich className="w-5 h-5" /> },
+  {
+    id: "items",
+    label: "Individual Items",
+    icon: <ClipboardList className="w-5 h-5" />,
+  },
 ];
 
 export default function WaiterPage() {
@@ -146,7 +158,7 @@ export default function WaiterPage() {
   return (
     <ProfileLayout
       title="Waiter Station"
-      icon="🍽️"
+      icon={<UtensilsCrossed className="w-6 h-6" />}
       sections={sidebarSections}
       activeSection={activeSection}
       onSectionChange={(id) => {
@@ -173,8 +185,8 @@ export default function WaiterPage() {
               </div>
             </div>
 
-            {/* Category Filter Pills */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            {/* Category Cards (POS Style) */}
+            <div className="flex gap-4 mb-8 overflow-x-auto pb-4 scrollbar-hide">
               {(activeSection === "meals"
                 ? mealCategories
                 : itemCategories
@@ -182,13 +194,19 @@ export default function WaiterPage() {
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  className={`flex flex-col items-center justify-center min-w-[100px] h-[100px] p-3 rounded-2xl transition-all border ${
                     activeCategory === cat.id
-                      ? "bg-[#001F3F] text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-violet-600 text-white shadow-lg scale-105 border-violet-600"
+                      : "bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300 border-transparent shadow-sm"
                   }`}
                 >
-                  {cat.label}
+                  <DynamicIcon
+                    name={cat.id === "all" ? "LayoutGrid" : cat.label}
+                    className={`w-8 h-8 mb-2 ${
+                      activeCategory === cat.id ? "text-white" : "text-gray-400"
+                    }`}
+                  />
+                  <span className="text-xs font-semibold">{cat.label}</span>
                 </button>
               ))}
             </div>
@@ -204,52 +222,60 @@ export default function WaiterPage() {
                 {filteredMeals.map((meal) => {
                   const qty = getItemQuantity(meal._id);
                   return (
-                    <div key={meal._id} className="card p-5 relative">
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center text-4xl">
-                          {meal.image}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-bold text-gray-800 text-lg">
-                            {meal.name}
-                          </h3>
-                          <p className="text-sm text-gray-500 mt-1">
-                            {meal.description}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => setSelectedMeal(meal)}
-                          className="w-8 h-8 bg-gray-100 text-gray-600 rounded-lg flex items-center justify-center hover:bg-gray-200 text-sm"
-                          title="View details"
-                        >
-                          ℹ️
-                        </button>
+                    <div
+                      key={meal._id}
+                      className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                    >
+                      <div
+                        className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                          meal.image.startsWith("http")
+                            ? "bg-transparent shadow-sm"
+                            : "bg-gradient-to-br from-amber-50 to-orange-50"
+                        }`}
+                      >
+                        <DynamicIcon
+                          name={meal.image}
+                          className={`${
+                            meal.image.startsWith("http")
+                              ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              : "w-16 h-16 text-amber-600 transition-transform group-hover:scale-110"
+                          }`}
+                        />
                       </div>
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                        <span className="text-2xl font-bold text-[#001F3F]">
-                          ${meal.price}
-                        </span>
+
+                      <h3 className="font-bold text-gray-800 text-lg mb-1 line-clamp-1">
+                        {meal.name}
+                      </h3>
+                      <p className="text-sm text-gray-400 mb-4 line-clamp-2 min-h-[40px]">
+                        {meal.description}
+                      </p>
+
+                      <div className="w-full mt-auto">
+                        <div className="flex items-center justify-between mb-3 px-1">
+                          <span className="text-xl font-bold text-violet-900">
+                            ${meal.price}
+                          </span>
+                        </div>
+
                         {qty === 0 ? (
                           <button
                             onClick={() => addMealToCart(meal)}
-                            className="w-10 h-10 bg-[#001F3F] text-white rounded-xl flex items-center justify-center text-xl font-bold hover:bg-[#00336b] transition-colors"
+                            className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
                           >
-                            +
+                            Add to Order
                           </button>
                         ) : (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                             <button
                               onClick={() => decreaseQuantity(meal._id)}
-                              className="w-8 h-8 bg-gray-100 text-gray-700 rounded-lg flex items-center justify-center text-lg font-bold hover:bg-gray-200 transition-colors"
+                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               −
                             </button>
-                            <span className="w-6 text-center font-bold text-gray-800">
-                              {qty}
-                            </span>
+                            <span className="font-bold text-xl">{qty}</span>
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-8 h-8 bg-[#001F3F] text-white rounded-lg flex items-center justify-center text-lg font-bold hover:bg-[#00336b] transition-colors"
+                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               +
                             </button>
@@ -265,20 +291,41 @@ export default function WaiterPage() {
                 {filteredMenu.map((item) => {
                   const qty = getItemQuantity(item._id);
                   return (
-                    <div key={item._id} className="card p-5 relative">
-                      <div className="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center mb-3">
-                        <span className="text-3xl">{item.image}</span>
+                    <div
+                      key={item._id}
+                      className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                    >
+                      <div
+                        className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                          item.image.startsWith("http")
+                            ? "bg-transparent shadow-sm"
+                            : "bg-gradient-to-br from-gray-50 to-gray-100"
+                        }`}
+                      >
+                        <DynamicIcon
+                          name={item.image}
+                          className={`${
+                            item.image.startsWith("http")
+                              ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              : "w-14 h-14 text-indigo-400 transition-transform group-hover:scale-110"
+                          }`}
+                        />
                       </div>
-                      <h3 className="font-semibold text-gray-800">
+
+                      <h3 className="font-bold text-gray-800 text-base mb-1 line-clamp-1">
                         {item.name}
                       </h3>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      <p className="text-xs text-gray-400 mb-4 line-clamp-2 min-h-[32px]">
                         {item.description}
                       </p>
-                      <div className="flex items-center justify-between mt-3">
-                        <p className="text-xl font-bold text-[#001F3F]">
-                          ${item.price}
-                        </p>
+
+                      <div className="w-full mt-auto">
+                        <div className="flex items-center justify-between mb-3 px-1">
+                          <span className="text-lg font-bold text-violet-900">
+                            ${item.price}
+                          </span>
+                        </div>
+
                         {qty === 0 ? (
                           <button
                             onClick={() => {
@@ -290,21 +337,19 @@ export default function WaiterPage() {
                               });
                               showToast(`Added ${item.name}`, "success");
                             }}
-                            className="w-10 h-10 bg-[#001F3F] text-white rounded-xl flex items-center justify-center text-xl font-bold hover:bg-[#00336b] transition-colors"
+                            className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
                           >
-                            +
+                            Add
                           </button>
                         ) : (
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                             <button
                               onClick={() => decreaseQuantity(item._id)}
-                              className="w-8 h-8 bg-gray-100 text-gray-700 rounded-lg flex items-center justify-center text-lg font-bold hover:bg-gray-200 transition-colors"
+                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               −
                             </button>
-                            <span className="w-6 text-center font-bold text-gray-800">
-                              {qty}
-                            </span>
+                            <span className="font-bold text-xl">{qty}</span>
                             <button
                               onClick={() => {
                                 addToCart({
@@ -314,7 +359,7 @@ export default function WaiterPage() {
                                   quantity: 1,
                                 });
                               }}
-                              className="w-8 h-8 bg-[#001F3F] text-white rounded-lg flex items-center justify-center text-lg font-bold hover:bg-[#00336b] transition-colors"
+                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               +
                             </button>
@@ -328,102 +373,122 @@ export default function WaiterPage() {
             )}
           </section>
 
-          {/* Cart Sidebar */}
+          {/* Cart Sidebar (Receipt Style) */}
           <aside className="xl:sticky xl:top-8 h-fit">
-            <div className="card p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-11 h-11 bg-gradient-to-br from-[#001F3F] to-[#00336b] rounded-xl flex items-center justify-center">
-                  <span className="text-xl">📝</span>
+            <div className="bg-white rounded-3xl shadow-lg p-6 flex flex-col h-[calc(100vh-140px)]">
+              <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-dashed border-gray-100">
+                <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
+                  <ShoppingCart className="w-5 h-5 text-gray-600" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-gray-800">Current Order</h2>
-                  <p className="text-xs text-gray-500">
-                    {items.length} item{items.length !== 1 ? "s" : ""} in cart
+                  <h2 className="font-bold text-gray-800 text-lg">
+                    Current Order
+                  </h2>
+                  <p className="text-xs text-gray-400 font-medium tracking-wide">
+                    ORDER #
+                    {Math.floor(Math.random() * 10000)
+                      .toString()
+                      .padStart(4, "0")}
                   </p>
                 </div>
               </div>
 
               {/* Table Number */}
-              <div className="mb-5">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="mb-6 bg-gray-50 p-4 rounded-2xl">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                   Table Number
                 </label>
                 <input
                   type="number"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
-                  className="input"
-                  placeholder="Enter table #"
+                  className="w-full bg-white border-none rounded-xl py-3 px-4 font-bold text-gray-800 text-lg focus:ring-2 focus:ring-violet-500/20 outline-none"
+                  placeholder="0"
                   min="1"
                 />
               </div>
 
-              {/* Cart Items */}
-              <div className="space-y-2 mb-5 max-h-72 overflow-y-auto">
+              {/* Cart Items List */}
+              <div className="flex-1 overflow-y-auto pr-2 space-y-4 mb-6 scrollbar-thin scrollbar-thumb-gray-200">
                 {items.length === 0 ? (
-                  <div className="text-center py-10 text-gray-400">
-                    <span className="text-5xl block mb-3">🛒</span>
-                    <p className="font-medium">Cart is empty</p>
-                    <p className="text-sm mt-1">Select items to add</p>
+                  <div className="flex flex-col items-center justify-center h-full text-gray-300">
+                    <ShoppingCart className="w-12 h-12 mb-3 opacity-20" />
+                    <p className="font-medium text-sm">No items yet</p>
                   </div>
                 ) : (
                   items.map((item) => (
-                    <div
-                      key={item.menuItemId}
-                      className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"
-                    >
-                      <div>
-                        <p className="font-medium text-gray-800 text-sm">
-                          {item.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          ×{item.quantity}
+                    <div key={item.menuItemId} className="flex gap-3 group">
+                      <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center shrink-0">
+                        {/* Placeholder or small icon if possible, else generic */}
+                        <div className="font-bold text-gray-400 text-xs">
+                          x{item.quantity}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
+                            {item.name}
+                          </h4>
+                          <span className="font-bold text-violet-600 text-sm">
+                            ${item.price * item.quantity}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400">
+                          ${item.price} each
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-gray-800">
-                          ${item.price * item.quantity}
-                        </span>
-                        <button
-                          onClick={() => removeFromCart(item.menuItemId)}
-                          className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-lg hover:bg-red-200 text-sm"
-                        >
-                          ×
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => removeFromCart(item.menuItemId)}
+                        className="w-6 h-6 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        ×
+                      </button>
                     </div>
                   ))
                 )}
               </div>
 
-              {/* Total & Submit */}
-              <div className="border-t border-gray-100 pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-600">Total</span>
-                  <span className="text-3xl font-bold text-[#001F3F]">
-                    ${total()}
+              {/* Summary & Actions */}
+              <div className="mt-auto pt-6 border-t-2 border-dashed border-gray-100">
+                <div className="flex justify-between items-center mb-2 text-sm">
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="font-medium text-gray-800">${total()}</span>
+                </div>
+                <div className="flex justify-between items-center mb-6 text-sm">
+                  <span className="text-gray-500">Tax (5%)</span>
+                  <span className="font-medium text-gray-800">
+                    ${(total() * 0.05).toFixed(2)}
                   </span>
                 </div>
-                <button
-                  onClick={handleOrder}
-                  disabled={items.length === 0 || isSubmitting}
-                  className="btn btn-success w-full py-3"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Spinner
-                        size="sm"
-                        className="border-white/30 border-t-white"
-                      />
-                      <span>Sending...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>✓</span>
-                      <span>Send to Kitchen</span>
-                    </>
-                  )}
-                </button>
+
+                <div className="flex justify-between items-end mb-6">
+                  <span className="text-gray-400 text-sm font-medium">
+                    Total Amount
+                  </span>
+                  <span className="text-3xl font-extrabold text-violet-900">
+                    ${(total() * 1.05).toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={clearCart}
+                    className="py-4 rounded-xl font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleOrder}
+                    disabled={items.length === 0 || isSubmitting}
+                    className="py-4 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    {isSubmitting ? (
+                      <Spinner className="w-5 h-5 text-white" />
+                    ) : (
+                      "Place Order"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </aside>
@@ -500,7 +565,7 @@ export default function WaiterPage() {
                   <span className="font-semibold text-gray-800">
                     Combo Price
                   </span>
-                  <span className="text-2xl font-bold text-[#001F3F]">
+                  <span className="text-2xl font-bold text-violet-900">
                     ${selectedMeal.price}
                   </span>
                 </div>
