@@ -6,36 +6,56 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import { Spinner } from "@/components/ui/Spinner";
 import { SkeletonOrderCard } from "@/components/ui/Skeleton";
-import { LazyLoad } from "@/components/ui/LazyLoad";
 
 interface MenuItem {
   _id: string;
   name: string;
   price: number;
   category: string;
+  image: string;
+  description: string;
 }
+
+interface MealPlan {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice: number;
+  image: string;
+  category: string;
+  savingsPercent: number;
+  items: Array<{ menuItemId: MenuItem; quantity: number }>;
+}
+
+type ViewMode = "meals" | "items";
 
 export default function WaiterPage() {
   const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+  const [viewMode, setViewMode] = useState<ViewMode>("meals");
   const [tableNumber, setTableNumber] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { items, addToCart, removeFromCart, total, clearCart } = useCartStore();
   const router = useRouter();
   const { showToast } = useToast();
 
   useEffect(() => {
-    fetchMenu();
+    Promise.all([fetchMenu(), fetchMealPlans()]).finally(() =>
+      setIsLoading(false)
+    );
   }, []);
 
   const fetchMenu = async () => {
-    try {
-      const res = await fetch("/api/menu");
-      const data = await res.json();
-      setMenu(data);
-    } finally {
-      setIsLoading(false);
-    }
+    const res = await fetch("/api/menu");
+    setMenu(await res.json());
+  };
+
+  const fetchMealPlans = async () => {
+    const res = await fetch("/api/meal-plans");
+    setMealPlans(await res.json());
   };
 
   const handleOrder = async () => {
@@ -75,20 +95,37 @@ export default function WaiterPage() {
     }
   };
 
-  const categoryIcons: Record<string, string> = {
-    "Fast Food": "🍔",
-    Drinks: "🥤",
-    Healthy: "🥗",
-    Desserts: "🍰",
-    "Main Course": "🍝",
-    Starters: "🥗",
+  const addMealToCart = (meal: MealPlan) => {
+    // Add each item from the meal plan to cart
+    meal.items.forEach((item) => {
+      for (let i = 0; i < item.quantity; i++) {
+        addToCart({
+          menuItemId: item.menuItemId._id,
+          name: item.menuItemId.name,
+          price: item.menuItemId.price,
+          quantity: 1,
+        });
+      }
+    });
+    showToast(`Added ${meal.name}`, "success");
   };
 
-  const groupedMenu = menu.reduce((acc, item) => {
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, MenuItem[]>);
+  const menuCategories = [...new Set(menu.map((m) => m.category))];
+  const mealCategories = [...new Set(mealPlans.map((m) => m.category))];
+  const categories = viewMode === "meals" ? mealCategories : menuCategories;
+  const filteredMenu = selectedCategory
+    ? menu.filter((m) => m.category === selectedCategory)
+    : menu;
+  const filteredMeals = selectedCategory
+    ? mealPlans.filter((m) => m.category === selectedCategory)
+    : mealPlans;
+
+  const categoryLabels: Record<string, string> = {
+    value: "💰 Value Meals",
+    family: "👨‍👩‍👧‍👦 Family",
+    kids: "🧒 Kids",
+    premium: "⭐ Premium",
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -109,7 +146,6 @@ export default function WaiterPage() {
           <button
             onClick={() => router.push("/login")}
             className="btn btn-outline text-sm py-2 px-4"
-            aria-label="Logout"
           >
             Logout
           </button>
@@ -119,78 +155,151 @@ export default function WaiterPage() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Menu Section */}
-          <section className="lg:col-span-2 space-y-8" aria-label="Menu items">
+          <section className="lg:col-span-2">
+            {/* View Toggle */}
+            <div className="flex gap-2 mb-6">
+              <button
+                onClick={() => {
+                  setViewMode("meals");
+                  setSelectedCategory(null);
+                }}
+                className={`btn ${
+                  viewMode === "meals" ? "btn-primary" : "btn-outline"
+                }`}
+              >
+                🍔 Meal Combos
+              </button>
+              <button
+                onClick={() => {
+                  setViewMode("items");
+                  setSelectedCategory(null);
+                }}
+                className={`btn ${
+                  viewMode === "items" ? "btn-primary" : "btn-outline"
+                }`}
+              >
+                📋 Individual Items
+              </button>
+            </div>
+
+            {/* Category Pills */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  !selectedCategory
+                    ? "bg-[#001F3F] text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                All
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedCategory === cat
+                      ? "bg-[#001F3F] text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {categoryLabels[cat] || cat}
+                </button>
+              ))}
+            </div>
+
             {isLoading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
+              <div className="grid grid-cols-2 gap-4">
+                {[...Array(4)].map((_, i) => (
                   <SkeletonOrderCard key={i} />
                 ))}
               </div>
-            ) : (
-              Object.entries(groupedMenu).map(([category, items], idx) => (
-                <LazyLoad key={category} delay={idx * 100}>
-                  <div className="animate-fade-in">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-2xl" aria-hidden="true">
-                        {categoryIcons[category] || "🍴"}
-                      </span>
-                      <h2 className="text-xl font-semibold text-[#001F3F]">
-                        {category}
-                      </h2>
-                      <span className="text-sm text-gray-400">
-                        ({items.length})
-                      </span>
+            ) : viewMode === "meals" ? (
+              /* Meal Plans Grid */
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {filteredMeals.map((meal) => (
+                  <div
+                    key={meal._id}
+                    className="card card-hover p-5 relative overflow-hidden"
+                  >
+                    {meal.savingsPercent > 0 && (
+                      <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        Save {meal.savingsPercent}%
+                      </div>
+                    )}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center text-4xl">
+                        {meal.image}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-gray-800">{meal.name}</h3>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {meal.description}
+                        </p>
+                      </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {items.map((item) => (
-                        <button
-                          key={item._id}
-                          onClick={() => {
-                            addToCart({
-                              menuItemId: item._id,
-                              name: item.name,
-                              price: item.price,
-                              quantity: 1,
-                            });
-                            showToast(`Added ${item.name}`, "success");
-                          }}
-                          className="card card-hover card-interactive p-5 text-left group"
-                          aria-label={`Add ${item.name} to cart - $${item.price}`}
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                              <span className="text-2xl">
-                                {categoryIcons[item.category] || "🍴"}
-                              </span>
-                            </div>
-                            <span className="btn btn-metallic text-xs py-1 px-2">
-                              + Add
-                            </span>
-                          </div>
-                          <h3 className="font-semibold text-gray-800">
-                            {item.name}
-                          </h3>
-                          <p className="text-lg font-bold text-[#001F3F] mt-1">
-                            ${item.price}
-                          </p>
-                        </button>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-2xl font-bold text-[#001F3F]">
+                          ${meal.price}
+                        </span>
+                        <span className="text-sm text-gray-400 line-through ml-2">
+                          ${meal.originalPrice}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => addMealToCart(meal)}
+                        className="btn btn-primary"
+                      >
+                        Add to Order
+                      </button>
                     </div>
                   </div>
-                </LazyLoad>
-              ))
+                ))}
+              </div>
+            ) : (
+              /* Individual Items Grid */
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {filteredMenu.map((item) => (
+                  <button
+                    key={item._id}
+                    onClick={() => {
+                      addToCart({
+                        menuItemId: item._id,
+                        name: item.name,
+                        price: item.price,
+                        quantity: 1,
+                      });
+                      showToast(`Added ${item.name}`, "success");
+                    }}
+                    className="card card-hover card-interactive p-4 text-left group"
+                  >
+                    <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-50 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <span className="text-2xl">{item.image}</span>
+                    </div>
+                    <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                      {item.description}
+                    </p>
+                    <p className="text-lg font-bold text-[#001F3F] mt-2">
+                      ${item.price}
+                    </p>
+                  </button>
+                ))}
+              </div>
             )}
           </section>
 
           {/* Cart Sidebar */}
-          <aside className="lg:sticky lg:top-24 h-fit" aria-label="Order cart">
+          <aside className="lg:sticky lg:top-24 h-fit">
             <div className="card p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#001F3F] to-[#00336b] rounded-xl flex items-center justify-center">
                   <span className="text-xl">📝</span>
                 </div>
                 <div>
-                  <h2 className="font-semibold text-gray-800">New Order</h2>
+                  <h2 className="font-semibold text-gray-800">Order</h2>
                   <p className="text-xs text-gray-500">
                     {items.length} item{items.length !== 1 ? "s" : ""}
                   </p>
@@ -205,26 +314,19 @@ export default function WaiterPage() {
                 >
                   Table Number
                 </label>
-                <div className="relative">
-                  <input
-                    id="table-number"
-                    type="number"
-                    value={tableNumber}
-                    onChange={(e) => setTableNumber(e.target.value)}
-                    className="input pl-12"
-                    placeholder="Enter table #"
-                    min="1"
-                    aria-required="true"
-                  />
-                </div>
+                <input
+                  id="table-number"
+                  type="number"
+                  value={tableNumber}
+                  onChange={(e) => setTableNumber(e.target.value)}
+                  className="input"
+                  placeholder="Enter table #"
+                  min="1"
+                />
               </div>
 
               {/* Cart Items */}
-              <div
-                className="space-y-3 mb-6 max-h-64 overflow-y-auto"
-                role="list"
-                aria-label="Cart items"
-              >
+              <div className="space-y-2 mb-6 max-h-64 overflow-y-auto">
                 {items.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <span className="text-4xl block mb-2">🛒</span>
@@ -235,22 +337,22 @@ export default function WaiterPage() {
                     <div
                       key={item.menuItemId}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100"
-                      role="listitem"
                     >
                       <div>
-                        <p className="font-medium text-gray-800">{item.name}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-medium text-gray-800 text-sm">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
                           ×{item.quantity}
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <span className="font-semibold text-gray-800">
                           ${item.price * item.quantity}
                         </span>
                         <button
                           onClick={() => removeFromCart(item.menuItemId)}
-                          className="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                          aria-label={`Remove ${item.name} from cart`}
+                          className="w-6 h-6 flex items-center justify-center bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors text-sm"
                         >
                           ×
                         </button>
@@ -272,7 +374,6 @@ export default function WaiterPage() {
                   onClick={handleOrder}
                   disabled={items.length === 0 || isSubmitting}
                   className="btn btn-success w-full"
-                  aria-busy={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
