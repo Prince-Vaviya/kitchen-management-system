@@ -9,7 +9,7 @@ export interface IMealPlan extends Document {
     name: string;
     description: string;
     price: number;
-    originalPrice: number; // Sum of individual items (to show savings)
+    originalPrice: number;
     items: IMealPlanItem[];
     image: string;
     category: 'value' | 'family' | 'kids' | 'premium';
@@ -23,13 +23,13 @@ const MealPlanItemSchema = new Schema({
     quantity: { type: Number, required: true, default: 1 },
 });
 
-const MealPlanSchema: Schema = new Schema({
+const MealPlanSchema: Schema<IMealPlan> = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     originalPrice: { type: Number, required: true },
     items: [MealPlanItemSchema],
-    image: { type: String, default: '🍔' }, // Emoji or URL
+    image: { type: String, default: '🍔' },
     category: {
         type: String,
         enum: ['value', 'family', 'kids', 'premium'],
@@ -39,7 +39,7 @@ const MealPlanSchema: Schema = new Schema({
 }, { timestamps: true });
 
 // Virtual for savings percentage
-MealPlanSchema.virtual('savingsPercent').get(function () {
+MealPlanSchema.virtual('savingsPercent').get(function (this: IMealPlan) {
     if (this.originalPrice <= 0) return 0;
     return Math.round(((this.originalPrice - this.price) / this.originalPrice) * 100);
 });
