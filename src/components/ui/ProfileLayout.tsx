@@ -3,7 +3,7 @@
 import { ReactNode, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useSocket } from "@/components/providers/SocketProvider";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, Menu, X } from "lucide-react";
 
 interface NavSection {
   id: string;
@@ -38,6 +38,7 @@ export function ProfileLayout({
   const [expandedSection, setExpandedSection] = useState<string | null>(
     activeSection,
   );
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleSectionClick = (sectionId: string) => {
     if (sectionId === "signout") {
@@ -52,20 +53,70 @@ export function ProfileLayout({
       setExpandedSection(expandedSection === sectionId ? null : sectionId);
     }
     onSectionChange(sectionId);
+    // Close mobile menu after selection
+    setIsMobileMenuOpen(false);
   };
 
   const handleSubItemClick = (itemId: string) => {
     if (onSubItemChange) {
       onSubItemChange(itemId);
     }
+    // Close mobile menu after selection
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Mobile Header */}
+      <div className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="text-white scale-75">{icon}</div>
+          </div>
+          <div>
+            <h1 className="font-bold text-base text-gray-900">{title}</h1>
+            <div
+              className={`flex items-center gap-1.5 text-[10px] ${
+                isConnected ? "text-green-600" : "text-gray-400"
+              }`}
+            >
+              <span
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isConnected ? "bg-green-500 animate-pulse" : "bg-gray-300"
+                }`}
+              />
+              {isConnected ? "Connected" : "Offline"}
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
+      </div>
+
+      {/* Sidebar Overlay (Mobile) */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-40">
-        {/* Header */}
-        <div className="p-6 border-b border-gray-100">
+      <aside
+        className={`fixed md:sticky top-0 h-screen w-64 bg-white border-r border-gray-200 flex flex-col z-40 transition-transform duration-300 md:translate-x-0 ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Header (Desktop) */}
+        <div className="hidden md:block p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
               <div className="text-white">{icon}</div>
@@ -161,7 +212,7 @@ export function ProfileLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 ml-64">{children}</main>
+      <main className="flex-1 w-full md:w-auto">{children}</main>
     </div>
   );
 }

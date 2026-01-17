@@ -220,7 +220,7 @@ export default function CounterPage() {
       activeSection={activeSection}
       onSectionChange={setActiveSection}
     >
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         {/* Active Orders Section */}
         {activeSection === "active" && (
           <div>
@@ -459,7 +459,7 @@ export default function CounterPage() {
 
         {/* New Order Section */}
         {activeSection === "new" && (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <div className="flex flex-col-reverse xl:grid xl:grid-cols-3 gap-8">
             {/* Menu Grid */}
             <section className="xl:col-span-2">
               <div className="flex items-center justify-between mb-6">
@@ -537,7 +537,7 @@ export default function CounterPage() {
 
               {/* Meal Combos Grid */}
               {viewMode === "meals" ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredMeals.map((meal) => {
                     const qty = getItemQuantity(meal._id);
                     return (
@@ -606,7 +606,7 @@ export default function CounterPage() {
                   })}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                   {filteredMenu.map((item) => {
                     const qty = getItemQuantity(item._id);
                     return (
@@ -693,7 +693,7 @@ export default function CounterPage() {
             </section>
 
             {/* Cart Sidebar (Receipt Style) */}
-            <aside className="xl:sticky xl:top-8 h-fit">
+            <aside className="w-full xl:sticky xl:top-8 h-fit">
               <div className="bg-white rounded-3xl shadow-lg p-6 flex flex-col h-[calc(100vh-140px)]">
                 <div className="flex items-center gap-3 mb-6 pb-6 border-b-2 border-dashed border-gray-100">
                   <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">

@@ -162,7 +162,7 @@ export default function LoginPage() {
 
           {/* Role Cards */}
           <div
-            className="grid grid-cols-3 gap-3"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-3"
             role="group"
             aria-label="Quick login options"
           >
@@ -185,7 +185,6 @@ export default function LoginPage() {
             ))}
           </div>
         </main>
-
       </div>
     </div>
   );

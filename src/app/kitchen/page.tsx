@@ -130,9 +130,9 @@ export default function KitchenPage() {
       activeSection={activeSection}
       onSectionChange={setActiveSection}
     >
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         {/* Stats Bar */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
           <div
             onClick={() => setActiveSection("queue")}
             className={`card p-5 cursor-pointer transition-all ${
@@ -187,7 +187,7 @@ export default function KitchenPage() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[...Array(4)].map((_, i) => (
               <SkeletonOrderCard key={i} />
             ))}
