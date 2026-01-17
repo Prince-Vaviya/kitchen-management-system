@@ -17,6 +17,8 @@ import {
   Wallet,
   LucideIcon,
   CircleHelp,
+  Hamburger,
+  Repeat2,
 } from "lucide-react";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -36,6 +38,8 @@ const iconMap: Record<string, LucideIcon> = {
   ChefHat,
   CookingPot,
   Wallet,
+  Hamburger,
+  Repeat2,
 };
 
 export const DynamicIcon = ({

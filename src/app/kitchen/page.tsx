@@ -64,7 +64,7 @@ export default function KitchenPage() {
             const exists = prev.find((o) => o._id === updatedOrder._id);
             if (exists) {
               return prev.map((o) =>
-                o._id === updatedOrder._id ? updatedOrder : o
+                o._id === updatedOrder._id ? updatedOrder : o,
               );
             }
             return [updatedOrder, ...prev];
@@ -88,7 +88,9 @@ export default function KitchenPage() {
       const res = await fetch("/api/orders");
       const data = await res.json();
       setOrders(
-        data.filter((o: Order) => ["confirmed", "preparing"].includes(o.status))
+        data.filter((o: Order) =>
+          ["confirmed", "preparing"].includes(o.status),
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -103,7 +105,7 @@ export default function KitchenPage() {
     });
     showToast(
       status === "preparing" ? "Started preparing!" : "Order ready!",
-      "success"
+      "success",
     );
   };
 
@@ -142,7 +144,7 @@ export default function KitchenPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">In Queue</p>
-                <p className="text-4xl font-bold text-violet-900">
+                <p className="text-4xl font-bold text-violet-600">
                   {queueOrders.length}
                 </p>
               </div>
@@ -160,7 +162,7 @@ export default function KitchenPage() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">Preparing</p>
-                <p className="text-4xl font-bold text-violet-900">
+                <p className="text-4xl font-bold text-violet-600">
                   {preparingOrders.length}
                 </p>
               </div>
@@ -212,7 +214,7 @@ export default function KitchenPage() {
                 key={order._id}
                 onClick={() =>
                   setSelectedOrder(
-                    selectedOrder?._id === order._id ? null : order
+                    selectedOrder?._id === order._id ? null : order,
                   )
                 }
                 className={`card p-6 cursor-pointer transition-all border-l-4 ${
@@ -320,7 +322,7 @@ export default function KitchenPage() {
                     e.stopPropagation();
                     updateStatus(
                       order._id,
-                      activeSection === "queue" ? "preparing" : "completed"
+                      activeSection === "queue" ? "preparing" : "completed",
                     );
                   }}
                   className={`btn w-full py-3 ${

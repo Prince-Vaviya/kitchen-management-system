@@ -16,6 +16,7 @@ import {
   ShoppingCart,
   LayoutDashboard,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Order {
   _id: string;
@@ -66,21 +67,21 @@ const sidebarSections = [
 ];
 
 const mealCategories = [
-  { id: "all", label: "All" },
-  { id: "family", label: "Family" },
-  { id: "kids", label: "Kids" },
-  { id: "premium", label: "Premium" },
-  { id: "value", label: "Value Meals" },
+  { id: "all", label: "All", icon: "Repeat2" },
+  { id: "family", label: "Family", icon: "Users" },
+  { id: "kids", label: "Kids", icon: "Baby" },
+  { id: "premium", label: "Premium", icon: "Banknote" },
+  { id: "value", label: "Value Meals", icon: "Wallet" },
 ];
 
 const itemCategories = [
-  { id: "all", label: "All" },
-  { id: "Burgers", label: "Burgers" },
-  { id: "Pizza", label: "Pizza" },
-  { id: "Sides", label: "Sides" },
-  { id: "Drinks", label: "Drinks" },
-  { id: "Desserts", label: "Desserts" },
-  { id: "Healthy", label: "Healthy" },
+  { id: "all", label: "All", icon: "Repeat2" },
+  { id: "Burgers", label: "Burgers", icon: "Hamburger" },
+  { id: "Pizza", label: "Pizza", icon: "Pizza" },
+  { id: "Sides", label: "Sides", icon: "Drumstick" },
+  { id: "Drinks", label: "Drinks", icon: "CupSoda" },
+  { id: "Desserts", label: "Desserts", icon: "IceCream" },
+  { id: "Healthy", label: "Healthy", icon: "Salad" },
 ];
 
 export default function CounterPage() {
@@ -106,7 +107,7 @@ export default function CounterPage() {
 
   useEffect(() => {
     Promise.all([fetchOrders(), fetchMenu(), fetchMealPlans()]).finally(() =>
-      setIsLoading(false)
+      setIsLoading(false),
     );
 
     if (socket) {
@@ -116,7 +117,7 @@ export default function CounterPage() {
       });
       socket.on("order_updated", (updatedOrder: Order) => {
         setOrders((prev) =>
-          prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+          prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o)),
         );
       });
     }
@@ -187,10 +188,10 @@ export default function CounterPage() {
       : menu.filter((m) => m.category === activeCategory);
 
   const activeOrders = orders.filter((o) =>
-    ["pending", "confirmed", "preparing", "completed"].includes(o.status)
+    ["pending", "confirmed", "preparing", "completed"].includes(o.status),
   );
   const completedOrders = orders.filter((o) =>
-    ["delivered", "rejected"].includes(o.status)
+    ["delivered", "rejected"].includes(o.status),
   );
 
   const statusBadge: Record<string, string> = {
@@ -256,7 +257,7 @@ export default function CounterPage() {
                     key={order._id}
                     onClick={() =>
                       setSelectedOrder(
-                        selectedOrder?._id === order._id ? null : order
+                        selectedOrder?._id === order._id ? null : order,
                       )
                     }
                     className={`card p-5 cursor-pointer transition-all ${
@@ -273,10 +274,10 @@ export default function CounterPage() {
                             order.status === "pending"
                               ? "bg-amber-100"
                               : order.status === "preparing"
-                              ? "bg-blue-100"
-                              : order.status === "completed"
-                              ? "bg-green-100"
-                              : "bg-gray-100"
+                                ? "bg-blue-100"
+                                : order.status === "completed"
+                                  ? "bg-green-100"
+                                  : "bg-gray-100"
                           }`}
                         >
                           {order.type === "dine-in" ? "🍽️" : "📦"}
@@ -399,7 +400,7 @@ export default function CounterPage() {
                     key={order._id}
                     onClick={() =>
                       setSelectedOrder(
-                        selectedOrder?._id === order._id ? null : order
+                        selectedOrder?._id === order._id ? null : order,
                       )
                     }
                     className="card p-5 cursor-pointer hover:shadow-md transition-all"
@@ -483,7 +484,7 @@ export default function CounterPage() {
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "meals"
-                      ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                      ? "bg-violet-500 text-white shadow-md shadow-violet-200 hover:bg-violet-600"
                       : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
@@ -496,7 +497,7 @@ export default function CounterPage() {
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "items"
-                      ? "bg-violet-600 text-white shadow-md shadow-violet-200"
+                      ? "bg-violet-500 text-white shadow-md shadow-violet-200 hover:bg-violet-600"
                       : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
@@ -513,21 +514,22 @@ export default function CounterPage() {
                       onClick={() => setActiveCategory(cat.id)}
                       className={`flex flex-col items-center justify-center min-w-[100px] h-[100px] p-3 rounded-2xl transition-all border ${
                         activeCategory === cat.id
-                          ? "bg-violet-600 text-white shadow-lg scale-105 border-violet-600"
+                          ? "bg-violet-500 text-white shadow-lg scale-105 border-violet-500 hover:bg-violet-600"
                           : "bg-white text-gray-400 hover:bg-gray-50 hover:border-gray-200 border-transparent shadow-sm"
                       }`}
                     >
                       <DynamicIcon
-                        name={cat.id === "all" ? "LayoutGrid" : cat.label}
-                        className={`w-8 h-8 mb-2 ${
+                        name={cat.icon}
+                        className={cn(
+                          "w-8 h-8 mb-2",
                           activeCategory === cat.id
                             ? "text-white"
-                            : "text-gray-400"
-                        }`}
+                            : "text-current",
+                        )}
                       />
                       <span className="text-xs font-semibold">{cat.label}</span>
                     </button>
-                  )
+                  ),
                 )}
               </div>
 
@@ -575,12 +577,12 @@ export default function CounterPage() {
                           {qty === 0 ? (
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
+                              className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-all flex items-center justify-center gap-2 text-lg shadow-sm shadow-violet-200"
                             >
                               Add to Order
                             </button>
                           ) : (
-                            <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                            <div className="flex items-center justify-between bg-violet-500 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                               <button
                                 onClick={() => decreaseQuantity(meal._id)}
                                 className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
@@ -652,12 +654,12 @@ export default function CounterPage() {
                                 });
                                 showToast(`Added ${item.name}`, "success");
                               }}
-                              className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
+                              className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-all flex items-center justify-center gap-2 text-lg shadow-sm shadow-violet-200"
                             >
                               Add
                             </button>
                           ) : (
-                            <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                            <div className="flex items-center justify-between bg-violet-500 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
                               <button
                                 onClick={() => decreaseQuantity(item._id)}
                                 className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
@@ -771,7 +773,7 @@ export default function CounterPage() {
                   <button
                     onClick={handleNewOrder}
                     disabled={items.length === 0 || isLoading}
-                    className="w-full py-4 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isLoading ? "Processing..." : "Place Order"}
                   </button>

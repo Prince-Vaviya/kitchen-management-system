@@ -14,6 +14,9 @@ import {
   ShoppingCart,
   AlertCircle,
 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { cn } from "@/lib/utils";
 
 interface MenuItem {
   _id: string;
@@ -35,21 +38,21 @@ interface MealPlan {
 }
 
 const mealCategories = [
-  { id: "all", label: "All" },
-  { id: "family", label: "Family" },
-  { id: "kids", label: "Kids" },
-  { id: "premium", label: "Premium" },
-  { id: "value", label: "Value Meals" },
+  { id: "all", label: "All", icon: "Repeat2" },
+  { id: "family", label: "Family", icon: "Users" },
+  { id: "kids", label: "Kids", icon: "Baby" },
+  { id: "premium", label: "Premium", icon: "Banknote" },
+  { id: "value", label: "Value Meals", icon: "Wallet" },
 ];
 
 const itemCategories = [
-  { id: "all", label: "All" },
-  { id: "Burgers", label: "Burgers" },
-  { id: "Pizza", label: "Pizza" },
-  { id: "Sides", label: "Sides" },
-  { id: "Drinks", label: "Drinks" },
-  { id: "Desserts", label: "Desserts" },
-  { id: "Healthy", label: "Healthy" },
+  { id: "all", label: "All", icon: "Repeat2" },
+  { id: "Burgers", label: "Burgers", icon: "Hamburger" },
+  { id: "Pizza", label: "Pizza", icon: "Pizza" },
+  { id: "Sides", label: "Sides", icon: "Drumstick" },
+  { id: "Drinks", label: "Drinks", icon: "CupSoda" },
+  { id: "Desserts", label: "Desserts", icon: "IceCream" },
+  { id: "Healthy", label: "Healthy", icon: "Salad" },
 ];
 
 const sidebarSections = [
@@ -83,7 +86,7 @@ export default function WaiterPage() {
 
   useEffect(() => {
     Promise.all([fetchMenu(), fetchMealPlans()]).finally(() =>
-      setIsLoading(false)
+      setIsLoading(false),
     );
   }, []);
 
@@ -191,23 +194,28 @@ export default function WaiterPage() {
                 ? mealCategories
                 : itemCategories
               ).map((cat) => (
-                <button
+                <Button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`flex flex-col items-center justify-center min-w-[100px] h-[100px] p-3 rounded-2xl transition-all border ${
+                  variant={activeCategory === cat.id ? "default" : "outline"}
+                  className={cn(
+                    "flex flex-col items-center justify-center h-auto min-w-[100px] min-h-[100px] p-3 rounded-2xl transition-all border",
                     activeCategory === cat.id
-                      ? "bg-violet-600 text-white shadow-lg scale-105 border-violet-600"
-                      : "bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300 border-transparent shadow-sm"
-                  }`}
+                      ? "scale-105 border-violet-600 shadow-lg"
+                      : "bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300 border-transparent shadow-sm",
+                  )}
                 >
                   <DynamicIcon
-                    name={cat.id === "all" ? "LayoutGrid" : cat.label}
-                    className={`w-8 h-8 mb-2 ${
-                      activeCategory === cat.id ? "text-white" : "text-gray-400"
-                    }`}
+                    name={cat.icon}
+                    className={cn(
+                      "w-8 h-8 mb-2",
+                      activeCategory === cat.id
+                        ? "text-white"
+                        : "text-gray-400",
+                    )}
                   />
                   <span className="text-xs font-semibold">{cat.label}</span>
-                </button>
+                </Button>
               ))}
             </div>
 
@@ -222,67 +230,68 @@ export default function WaiterPage() {
                 {filteredMeals.map((meal) => {
                   const qty = getItemQuantity(meal._id);
                   return (
-                    <div
+                    <Card
                       key={meal._id}
-                      className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                      className="p-4 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div
-                        className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                        className={cn(
+                          "w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden",
                           meal.image.startsWith("http")
                             ? "bg-transparent shadow-sm"
-                            : "bg-gradient-to-br from-amber-50 to-orange-50"
-                        }`}
+                            : "bg-gradient-to-br from-amber-50 to-orange-50",
+                        )}
                       >
                         <DynamicIcon
                           name={meal.image}
-                          className={`${
+                          className={cn(
                             meal.image.startsWith("http")
                               ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                              : "w-16 h-16 text-amber-600 transition-transform group-hover:scale-110"
-                          }`}
+                              : "w-16 h-16 text-amber-600 transition-transform group-hover:scale-110",
+                          )}
                         />
                       </div>
 
-                      <h3 className="font-bold text-gray-800 text-lg mb-1 line-clamp-1">
+                      <h3 className="font-bold text-gray-800 text-xl mb-1 line-clamp-1">
                         {meal.name}
                       </h3>
-                      <p className="text-sm text-gray-400 mb-4 line-clamp-2 min-h-[40px]">
+                      <p className="text-lg text-gray-500 mb-4 line-clamp-2 min-h-[40px]">
                         {meal.description}
                       </p>
 
                       <div className="w-full mt-auto">
                         <div className="flex items-center justify-between mb-3 px-1">
-                          <span className="text-xl font-bold text-violet-900">
+                          <span className="text-xl font-bold text-violet-600">
                             ${meal.price}
                           </span>
                         </div>
 
                         {qty === 0 ? (
-                          <button
+                          <Button
                             onClick={() => addMealToCart(meal)}
-                            className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
+                            className="w-full h-12 text-lg"
                           >
                             Add to Order
-                          </button>
+                          </Button>
                         ) : (
-                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-md">
                             <button
                               onClick={() => decreaseQuantity(meal._id)}
-                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               −
                             </button>
                             <span className="font-bold text-xl">{qty}</span>
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               +
                             </button>
                           </div>
                         )}
                       </div>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
@@ -291,24 +300,25 @@ export default function WaiterPage() {
                 {filteredMenu.map((item) => {
                   const qty = getItemQuantity(item._id);
                   return (
-                    <div
+                    <Card
                       key={item._id}
-                      className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                      className="p-4 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-shadow"
                     >
                       <div
-                        className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                        className={cn(
+                          "w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden",
                           item.image.startsWith("http")
                             ? "bg-transparent shadow-sm"
-                            : "bg-gradient-to-br from-gray-50 to-gray-100"
-                        }`}
+                            : "bg-gradient-to-br from-gray-50 to-gray-100",
+                        )}
                       >
                         <DynamicIcon
                           name={item.image}
-                          className={`${
+                          className={cn(
                             item.image.startsWith("http")
                               ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                              : "w-14 h-14 text-indigo-400 transition-transform group-hover:scale-110"
-                          }`}
+                              : "w-14 h-14 text-indigo-400 transition-transform group-hover:scale-110",
+                          )}
                         />
                       </div>
 
@@ -327,7 +337,7 @@ export default function WaiterPage() {
                         </div>
 
                         {qty === 0 ? (
-                          <button
+                          <Button
                             onClick={() => {
                               addToCart({
                                 menuItemId: item._id,
@@ -337,15 +347,15 @@ export default function WaiterPage() {
                               });
                               showToast(`Added ${item.name}`, "success");
                             }}
-                            className="w-full py-4 bg-gray-50 text-violet-600 rounded-xl font-bold hover:bg-violet-600 hover:text-white transition-all flex items-center justify-center gap-2 text-lg shadow-sm"
+                            className="w-full"
                           >
                             Add
-                          </button>
+                          </Button>
                         ) : (
-                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-md">
                             <button
                               onClick={() => decreaseQuantity(item._id)}
-                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               −
                             </button>
@@ -359,14 +369,14 @@ export default function WaiterPage() {
                                   quantity: 1,
                                 });
                               }}
-                              className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
                             >
                               +
                             </button>
                           </div>
                         )}
                       </div>
-                    </div>
+                    </Card>
                   );
                 })}
               </div>
@@ -394,16 +404,16 @@ export default function WaiterPage() {
               </div>
 
               {/* Table Number */}
-              <div className="mb-6 bg-gray-50 p-4 rounded-2xl">
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+              <div className="mb-6 bg-violet-50 p-4 rounded-2xl border-2 border-violet-100">
+                <label className="block text-xs font-bold text-violet-600 uppercase tracking-wider mb-2">
                   Table Number
                 </label>
                 <input
                   type="number"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
-                  className="w-full bg-white border-none rounded-xl py-3 px-4 font-bold text-gray-800 text-lg focus:ring-2 focus:ring-violet-500/20 outline-none"
-                  placeholder="0"
+                  className="w-full bg-white border-2 border-violet-100 rounded-xl py-3 px-4 font-bold text-gray-800 text-lg focus:ring-2 focus:ring-violet-100 outline-none transition-all placeholder:text-gray-300"
+                  placeholder="Enter table #"
                   min="1"
                 />
               </div>
@@ -471,23 +481,24 @@ export default function WaiterPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button
+                  <Button
                     onClick={clearCart}
-                    className="py-4 rounded-xl font-bold text-gray-500 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    variant="outline"
+                    className="h-14 text-lg font-bold"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleOrder}
                     disabled={items.length === 0 || isSubmitting}
-                    className="py-4 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="h-14 text-lg font-bold shadow-lg shadow-violet-200"
                   >
                     {isSubmitting ? (
                       <Spinner className="w-5 h-5 text-white" />
                     ) : (
                       "Place Order"
                     )}
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
