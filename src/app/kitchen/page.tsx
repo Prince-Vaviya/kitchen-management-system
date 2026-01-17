@@ -13,6 +13,7 @@ import {
   CircleCheck,
   StickyNote,
   UtensilsCrossed,
+  Package,
 } from "lucide-react";
 
 interface Order {
@@ -140,11 +141,11 @@ export default function KitchenPage() {
           >
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center">
-                <span className="text-3xl">📋</span>
+                <ClipboardList className="w-7 h-7 text-amber-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">In Queue</p>
-                <p className="text-4xl font-bold text-violet-600">
+                <p className="text-4xl font-bold text-gray-900">
                   {queueOrders.length}
                 </p>
               </div>
@@ -158,11 +159,11 @@ export default function KitchenPage() {
           >
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
-                <span className="text-3xl">🔥</span>
+                <Flame className="w-7 h-7 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Preparing</p>
-                <p className="text-4xl font-bold text-violet-600">
+                <p className="text-4xl font-bold text-gray-900">
                   {preparingOrders.length}
                 </p>
               </div>
@@ -193,9 +194,13 @@ export default function KitchenPage() {
           </div>
         ) : displayOrders.length === 0 ? (
           <div className="card p-16 text-center text-gray-400">
-            <span className="text-7xl block mb-4">
-              {activeSection === "queue" ? "📋" : "👨‍🍳"}
-            </span>
+            <div className="flex justify-center mb-4">
+              {activeSection === "queue" ? (
+                <ClipboardList className="w-16 h-16 text-gray-300" />
+              ) : (
+                <ChefHat className="w-16 h-16 text-gray-300" />
+              )}
+            </div>
             <p className="text-xl font-medium">
               {activeSection === "queue"
                 ? "No orders in queue"
@@ -223,7 +228,7 @@ export default function KitchenPage() {
                     : "border-l-blue-500"
                 } ${
                   selectedOrder?._id === order._id
-                    ? "ring-2 ring-violet-900"
+                    ? "ring-2 ring-gray-900"
                     : "hover:shadow-lg"
                 }`}
               >
@@ -237,7 +242,11 @@ export default function KitchenPage() {
                           : "bg-gradient-to-br from-blue-500 to-blue-600 animate-pulse"
                       }`}
                     >
-                      {order.type === "dine-in" ? order.tableNumber : "📦"}
+                      {order.type === "dine-in" ? (
+                        order.tableNumber
+                      ) : (
+                        <Package className="w-6 h-6" />
+                      )}
                     </div>
                     <div>
                       <p className="font-bold text-gray-800 text-xl">
@@ -251,7 +260,7 @@ export default function KitchenPage() {
                       </p>
                       {activeSection === "preparing" && (
                         <p className="text-sm text-blue-600 font-medium mt-1 flex items-center gap-1">
-                          <span className="animate-pulse">🔥</span> Cooking...
+                          <Flame className="w-4 h-4 animate-pulse" /> Cooking...
                         </p>
                       )}
                     </div>
@@ -330,8 +339,8 @@ export default function KitchenPage() {
                   }`}
                 >
                   {activeSection === "queue"
-                    ? "🔥 Start Preparing"
-                    : "✓ Ready for Pickup"}
+                    ? "Start Preparing"
+                    : "Ready for Pickup"}
                 </button>
               </div>
             ))}

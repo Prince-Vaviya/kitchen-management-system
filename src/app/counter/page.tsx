@@ -484,7 +484,7 @@ export default function CounterPage() {
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "meals"
-                      ? "bg-violet-500 text-white shadow-md shadow-violet-200 hover:bg-violet-600"
+                      ? "bg-gray-900 text-white shadow-md shadow-gray-200 hover:bg-gray-800"
                       : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
@@ -497,7 +497,7 @@ export default function CounterPage() {
                   }}
                   className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ${
                     viewMode === "items"
-                      ? "bg-violet-500 text-white shadow-md shadow-violet-200 hover:bg-violet-600"
+                      ? "bg-gray-900 text-white shadow-md shadow-gray-200 hover:bg-gray-800"
                       : "bg-white text-gray-500 hover:bg-gray-50 border border-gray-100"
                   }`}
                 >
@@ -505,29 +505,31 @@ export default function CounterPage() {
                 </button>
               </div>
 
-              {/* Category Cards (POS Style) */}
-              <div className="flex gap-4 mb-8 overflow-x-auto pb-4 scrollbar-hide">
+              {/* Category Cards (Compact) */}
+              <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
                 {(viewMode === "meals" ? mealCategories : itemCategories).map(
                   (cat) => (
                     <button
                       key={cat.id}
                       onClick={() => setActiveCategory(cat.id)}
-                      className={`flex flex-col items-center justify-center min-w-[100px] h-[100px] p-3 rounded-2xl transition-all border ${
+                      className={`flex flex-col items-center justify-center min-w-[70px] h-[70px] p-2 rounded-xl transition-all border ${
                         activeCategory === cat.id
-                          ? "bg-violet-500 text-white shadow-lg scale-105 border-violet-500 hover:bg-violet-600"
-                          : "bg-white text-gray-400 hover:bg-gray-50 hover:border-gray-200 border-transparent shadow-sm"
+                          ? "bg-gray-900 text-white shadow-md border-gray-900"
+                          : "bg-white text-gray-400 hover:bg-gray-50 border-gray-100"
                       }`}
                     >
                       <DynamicIcon
                         name={cat.icon}
                         className={cn(
-                          "w-8 h-8 mb-2",
+                          "w-5 h-5 mb-1",
                           activeCategory === cat.id
                             ? "text-white"
                             : "text-current",
                         )}
                       />
-                      <span className="text-xs font-semibold">{cat.label}</span>
+                      <span className="text-[10px] font-medium">
+                        {cat.label}
+                      </span>
                     </button>
                   ),
                 )}
@@ -535,13 +537,13 @@ export default function CounterPage() {
 
               {/* Meal Combos Grid */}
               {viewMode === "meals" ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {filteredMeals.map((meal) => {
                     const qty = getItemQuantity(meal._id);
                     return (
                       <div
                         key={meal._id}
-                        className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                        className="card p-3 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-xl"
                       >
                         <div
                           className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
@@ -560,16 +562,16 @@ export default function CounterPage() {
                           />
                         </div>
 
-                        <h3 className="font-bold text-gray-800 text-lg mb-1 line-clamp-1">
+                        <h3 className="font-semibold text-gray-800 text-sm mb-0.5 line-clamp-1">
                           {meal.name}
                         </h3>
-                        <p className="text-sm text-gray-400 mb-4 line-clamp-2 min-h-[40px]">
+                        <p className="text-xs text-gray-400 mb-2 line-clamp-1">
                           {meal.description}
                         </p>
 
                         <div className="w-full mt-auto">
                           <div className="flex items-center justify-between mb-3 px-1">
-                            <span className="text-xl font-bold text-violet-900">
+                            <span className="text-xl font-bold text-gray-900">
                               ${meal.price}
                             </span>
                           </div>
@@ -577,22 +579,22 @@ export default function CounterPage() {
                           {qty === 0 ? (
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-all flex items-center justify-center gap-2 text-lg shadow-sm shadow-violet-200"
+                              className="w-full py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all text-sm"
                             >
-                              Add to Order
+                              Add
                             </button>
                           ) : (
-                            <div className="flex items-center justify-between bg-violet-500 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                            <div className="flex items-center justify-between bg-gray-900 text-white rounded-lg">
                               <button
                                 onClick={() => decreaseQuantity(meal._id)}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-l-lg transition-colors text-lg font-bold"
                               >
                                 −
                               </button>
-                              <span className="font-bold text-xl">{qty}</span>
+                              <span className="font-bold text-sm">{qty}</span>
                               <button
                                 onClick={() => addMealToCart(meal)}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-r-lg transition-colors text-lg font-bold"
                               >
                                 +
                               </button>
@@ -604,16 +606,16 @@ export default function CounterPage() {
                   })}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {filteredMenu.map((item) => {
                     const qty = getItemQuantity(item._id);
                     return (
                       <div
                         key={item._id}
-                        className="card p-4 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-3xl"
+                        className="card p-3 flex flex-col items-center text-center bg-white shadow-sm hover:shadow-md transition-shadow rounded-xl"
                       >
                         <div
-                          className={`w-full aspect-[4/3] rounded-2xl mb-4 flex items-center justify-center relative group overflow-hidden ${
+                          className={`w-full aspect-[4/3] rounded-lg mb-2 flex items-center justify-center relative group overflow-hidden ${
                             item.image.startsWith("http")
                               ? "bg-transparent shadow-sm"
                               : "bg-gradient-to-br from-gray-50 to-gray-100"
@@ -624,21 +626,21 @@ export default function CounterPage() {
                             className={`${
                               item.image.startsWith("http")
                                 ? "w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                : "w-14 h-14 text-indigo-400 transition-transform group-hover:scale-110"
+                                : "w-10 h-10 text-gray-400 transition-transform group-hover:scale-110"
                             }`}
                           />
                         </div>
 
-                        <h3 className="font-bold text-gray-800 text-base mb-1 line-clamp-1">
+                        <h3 className="font-semibold text-gray-800 text-sm mb-0.5 line-clamp-1">
                           {item.name}
                         </h3>
-                        <p className="text-xs text-gray-400 mb-4 line-clamp-2 min-h-[32px]">
+                        <p className="text-xs text-gray-400 mb-2 line-clamp-1">
                           {item.description}
                         </p>
 
                         <div className="w-full mt-auto">
-                          <div className="flex items-center justify-between mb-3 px-1">
-                            <span className="text-lg font-bold text-violet-900">
+                          <div className="flex items-center justify-between mb-2 px-1">
+                            <span className="text-sm font-bold text-gray-900">
                               ${item.price}
                             </span>
                           </div>
@@ -654,19 +656,19 @@ export default function CounterPage() {
                                 });
                                 showToast(`Added ${item.name}`, "success");
                               }}
-                              className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-all flex items-center justify-center gap-2 text-lg shadow-sm shadow-violet-200"
+                              className="w-full py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-all text-sm"
                             >
                               Add
                             </button>
                           ) : (
-                            <div className="flex items-center justify-between bg-violet-500 text-white rounded-xl p-1 shadow-lg shadow-violet-200">
+                            <div className="flex items-center justify-between bg-gray-900 text-white rounded-lg">
                               <button
                                 onClick={() => decreaseQuantity(item._id)}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-l-lg transition-colors text-lg font-bold"
                               >
                                 −
                               </button>
-                              <span className="font-bold text-xl">{qty}</span>
+                              <span className="font-bold text-sm">{qty}</span>
                               <button
                                 onClick={() => {
                                   addToCart({
@@ -676,7 +678,7 @@ export default function CounterPage() {
                                     quantity: 1,
                                   });
                                 }}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                                className="w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-r-lg transition-colors text-lg font-bold"
                               >
                                 +
                               </button>
@@ -727,7 +729,7 @@ export default function CounterPage() {
                             <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
                               {item.name}
                             </h4>
-                            <span className="font-bold text-violet-600 text-sm">
+                            <span className="font-bold text-gray-800 text-sm">
                               ${item.price * item.quantity}
                             </span>
                           </div>
@@ -765,7 +767,7 @@ export default function CounterPage() {
                     <span className="text-gray-400 text-sm font-medium">
                       Total Amount
                     </span>
-                    <span className="text-3xl font-extrabold text-violet-900">
+                    <span className="text-3xl font-extrabold text-gray-900">
                       ${(total() * 1.05).toFixed(2)}
                     </span>
                   </div>
@@ -773,7 +775,7 @@ export default function CounterPage() {
                   <button
                     onClick={handleNewOrder}
                     disabled={items.length === 0 || isLoading}
-                    className="w-full py-4 bg-violet-500 text-white rounded-xl font-bold hover:bg-violet-600 transition-colors shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    className="w-full py-4 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {isLoading ? "Processing..." : "Place Order"}
                   </button>

@@ -36,7 +36,7 @@ export function ProfileLayout({
   const router = useRouter();
   const { isConnected } = useSocket();
   const [expandedSection, setExpandedSection] = useState<string | null>(
-    activeSection
+    activeSection,
   );
 
   const handleSectionClick = (sectionId: string) => {
@@ -67,11 +67,11 @@ export function ProfileLayout({
         {/* Header */}
         <div className="p-6 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-violet-600 to-violet-800 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
               <div className="text-white">{icon}</div>
             </div>
             <div>
-              <h1 className="font-bold text-lg text-violet-900">{title}</h1>
+              <h1 className="font-bold text-lg text-gray-900">{title}</h1>
               <div
                 className={`flex items-center gap-1.5 text-xs ${
                   isConnected ? "text-green-600" : "text-gray-400"
@@ -99,7 +99,7 @@ export function ProfileLayout({
                     onClick={() => handleSectionClick(section.id)}
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all ${
                       activeSection === section.id
-                        ? "bg-violet-600 text-white"
+                        ? "bg-gray-900 text-white"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
@@ -127,14 +127,14 @@ export function ProfileLayout({
                             onClick={() => handleSubItemClick(item.id)}
                             className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all ${
                               activeSubItem === item.id
-                                ? "bg-violet-50 text-violet-600 font-medium"
+                                ? "bg-gray-100 text-gray-900 font-medium"
                                 : "text-gray-600 hover:bg-gray-50"
                             }`}
                           >
                             <span
                               className={`w-2 h-2 rounded-full ${
                                 activeSubItem === item.id
-                                  ? "bg-violet-600"
+                                  ? "bg-gray-900"
                                   : "bg-gray-300"
                               }`}
                             />

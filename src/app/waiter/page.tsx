@@ -201,7 +201,7 @@ export default function WaiterPage() {
                   className={cn(
                     "flex flex-col items-center justify-center h-auto min-w-[100px] min-h-[100px] p-3 rounded-2xl transition-all border",
                     activeCategory === cat.id
-                      ? "scale-105 border-violet-600 shadow-lg"
+                      ? "scale-105 border-gray-900 shadow-lg"
                       : "bg-white text-gray-500 hover:bg-gray-50 hover:border-gray-300 border-transparent shadow-sm",
                   )}
                 >
@@ -226,7 +226,7 @@ export default function WaiterPage() {
                 ))}
               </div>
             ) : activeSection === "meals" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {filteredMeals.map((meal) => {
                   const qty = getItemQuantity(meal._id);
                   return (
@@ -261,7 +261,7 @@ export default function WaiterPage() {
 
                       <div className="w-full mt-auto">
                         <div className="flex items-center justify-between mb-3 px-1">
-                          <span className="text-xl font-bold text-violet-600">
+                          <span className="text-xl font-bold text-gray-800">
                             ${meal.price}
                           </span>
                         </div>
@@ -274,17 +274,17 @@ export default function WaiterPage() {
                             Add to Order
                           </Button>
                         ) : (
-                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-md">
+                          <div className="flex items-center justify-between bg-gray-900 text-white rounded-xl p-1 shadow-md">
                             <button
                               onClick={() => decreaseQuantity(meal._id)}
-                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-2xl font-bold"
                             >
                               −
                             </button>
                             <span className="font-bold text-xl">{qty}</span>
                             <button
                               onClick={() => addMealToCart(meal)}
-                              className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
+                              className="w-12 h-10 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors text-2xl font-bold"
                             >
                               +
                             </button>
@@ -331,7 +331,7 @@ export default function WaiterPage() {
 
                       <div className="w-full mt-auto">
                         <div className="flex items-center justify-between mb-3 px-1">
-                          <span className="text-lg font-bold text-violet-900">
+                          <span className="text-lg font-bold text-gray-900">
                             ${item.price}
                           </span>
                         </div>
@@ -352,7 +352,7 @@ export default function WaiterPage() {
                             Add
                           </Button>
                         ) : (
-                          <div className="flex items-center justify-between bg-violet-600 text-white rounded-xl p-1 shadow-md">
+                          <div className="flex items-center justify-between bg-black text-white rounded-xl p-1 shadow-md">
                             <button
                               onClick={() => decreaseQuantity(item._id)}
                               className="w-12 h-10 flex items-center justify-center hover:bg-white/20 rounded-lg transition-colors text-2xl font-bold"
@@ -404,15 +404,15 @@ export default function WaiterPage() {
               </div>
 
               {/* Table Number */}
-              <div className="mb-6 bg-violet-50 p-4 rounded-2xl border-2 border-violet-100">
-                <label className="block text-xs font-bold text-violet-600 uppercase tracking-wider mb-2">
+              <div className="mb-6 bg-gray-50 p-4 rounded-2xl border-2 border-gray-100">
+                <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
                   Table Number
                 </label>
                 <input
                   type="number"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
-                  className="w-full bg-white border-2 border-violet-100 rounded-xl py-3 px-4 font-bold text-gray-800 text-lg focus:ring-2 focus:ring-violet-100 outline-none transition-all placeholder:text-gray-300"
+                  className="w-full bg-white border-2 border-gray-100 rounded-xl py-3 px-4 font-bold text-gray-800 text-lg focus:ring-2 focus:ring-gray-200 outline-none transition-all placeholder:text-gray-300"
                   placeholder="Enter table #"
                   min="1"
                 />
@@ -439,7 +439,7 @@ export default function WaiterPage() {
                           <h4 className="font-bold text-gray-800 text-sm leading-tight mb-1">
                             {item.name}
                           </h4>
-                          <span className="font-bold text-violet-600 text-sm">
+                          <span className="font-bold text-gray-800 text-sm">
                             ${item.price * item.quantity}
                           </span>
                         </div>
@@ -475,7 +475,7 @@ export default function WaiterPage() {
                   <span className="text-gray-400 text-sm font-medium">
                     Total Amount
                   </span>
-                  <span className="text-3xl font-extrabold text-violet-900">
+                  <span className="text-3xl font-extrabold text-gray-900">
                     ${(total() * 1.05).toFixed(2)}
                   </span>
                 </div>
@@ -491,7 +491,7 @@ export default function WaiterPage() {
                   <Button
                     onClick={handleOrder}
                     disabled={items.length === 0 || isSubmitting}
-                    className="h-14 text-lg font-bold shadow-lg shadow-violet-200"
+                    className="h-14 text-lg font-bold shadow-lg shadow-gray-200"
                   >
                     {isSubmitting ? (
                       <Spinner className="w-5 h-5 text-white" />
@@ -576,7 +576,7 @@ export default function WaiterPage() {
                   <span className="font-semibold text-gray-800">
                     Combo Price
                   </span>
-                  <span className="text-2xl font-bold text-violet-900">
+                  <span className="text-2xl font-bold text-gray-900">
                     ${selectedMeal.price}
                   </span>
                 </div>
