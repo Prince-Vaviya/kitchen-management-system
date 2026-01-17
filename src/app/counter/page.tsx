@@ -296,7 +296,7 @@ export default function CounterPage() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-xl font-bold text-[#001F3F]">
-                          ${order.totalAmount}
+                          ₹{order.totalAmount}
                         </span>
                         <span className={`badge ${statusBadge[order.status]}`}>
                           {order.status}
@@ -323,7 +323,7 @@ export default function CounterPage() {
                                 {item.quantity}× {item.name}
                               </span>
                               <span className="font-semibold text-gray-700">
-                                ${item.price * item.quantity}
+                                ₹{item.price * item.quantity}
                               </span>
                             </div>
                           ))}
@@ -423,7 +423,7 @@ export default function CounterPage() {
                       </div>
                       <div className="flex items-center gap-4">
                         <span className="text-xl font-bold text-gray-600">
-                          ${order.totalAmount}
+                          ₹{order.totalAmount}
                         </span>
                         <span className={`badge ${statusBadge[order.status]}`}>
                           {order.status}
@@ -443,7 +443,7 @@ export default function CounterPage() {
                                 {item.quantity}× {item.name}
                               </span>
                               <span className="font-semibold">
-                                ${item.price * item.quantity}
+                                ₹{item.price * item.quantity}
                               </span>
                             </div>
                           ))}
@@ -572,7 +572,7 @@ export default function CounterPage() {
                         <div className="w-full mt-auto">
                           <div className="flex items-center justify-between mb-3 px-1">
                             <span className="text-xl font-bold text-gray-900">
-                              ${meal.price}
+                              ₹{meal.price}
                             </span>
                           </div>
 
@@ -641,7 +641,7 @@ export default function CounterPage() {
                         <div className="w-full mt-auto">
                           <div className="flex items-center justify-between mb-2 px-1">
                             <span className="text-sm font-bold text-gray-900">
-                              ${item.price}
+                              ₹{item.price}
                             </span>
                           </div>
 
@@ -730,11 +730,11 @@ export default function CounterPage() {
                               {item.name}
                             </h4>
                             <span className="font-bold text-gray-800 text-sm">
-                              ${item.price * item.quantity}
+                              ₹{item.price * item.quantity}
                             </span>
                           </div>
                           <p className="text-xs text-gray-400">
-                            ${item.price} each
+                            ₹{item.price} each
                           </p>
                         </div>
                         <button
@@ -753,13 +753,13 @@ export default function CounterPage() {
                   <div className="flex justify-between items-center mb-2 text-sm">
                     <span className="text-gray-500">Subtotal</span>
                     <span className="font-medium text-gray-800">
-                      ${total()}
+                      ₹{total()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center mb-6 text-sm">
                     <span className="text-gray-500">Tax (5%)</span>
                     <span className="font-medium text-gray-800">
-                      ${(total() * 0.05).toFixed(2)}
+                      ₹{(total() * 0.05).toFixed(2)}
                     </span>
                   </div>
 
@@ -768,7 +768,7 @@ export default function CounterPage() {
                       Total Amount
                     </span>
                     <span className="text-3xl font-extrabold text-gray-900">
-                      ${(total() * 1.05).toFixed(2)}
+                      ₹{(total() * 1.05).toFixed(2)}
                     </span>
                   </div>
 

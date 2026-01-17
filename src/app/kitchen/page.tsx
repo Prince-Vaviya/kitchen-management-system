@@ -314,12 +314,12 @@ export default function KitchenPage() {
                           <span>
                             {item.quantity}× {item.name}
                           </span>
-                          <span>${item.price * item.quantity}</span>
+                          <span>₹{item.price * item.quantity}</span>
                         </div>
                       ))}
                       <div className="flex justify-between font-bold text-gray-800 pt-2 border-t border-gray-200">
                         <span>Total</span>
-                        <span>${order.totalAmount}</span>
+                        <span>₹{order.totalAmount}</span>
                       </div>
                     </div>
                   </div>
